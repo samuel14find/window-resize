@@ -66,3 +66,48 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/de
 ### `npm run build` fails to minify
 
 This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+
+### Minhas Notas
+Não precisamos ficar apenas usando os Hooks que o time do React disponibiliza para gente, como useState e useEffect. 
+Podemos criar nossos próprios Hooks. No exemplo dessa aula vamos fazer o seguinte. Criar um Hook que quando redimensionamos 
+a janela do navegador, vai ir mostrando o número na tela. Iremos usar o useEffect. Eu vou criar um projeto separado 
+chamado window-resize. De acordo com o instrutor ele vai chamar o listener do objeto window e vai pegar a largura com um hook.
+Foi criado um arquivo useWindowWidth.js que o instrutor chamou de hook. Interessante como ele pegou a largura atual da tela 
+através de uma variável de estado. Foi usar o hook useState desse modo:
+```
+const [width, setWidth] = useState(window.innerWidth)
+```
+Esse método innerWidth vai retornar o largura da viewPort. Vamos usar o useEffect() para que:
+> Toda vez que inicializarmos o componente vai ser adicionado um listener na window para que ao fazer o redimensionamento 
+>da janela vamos atualizar o valor da largura da janela.
+
+E para chegar à essas coisas vamos adicionar um `addEventListener` à janela window. E para setar o Width vamos criar a 
+function `handleWindowWidth()` e passar para o `setWidth` que é a function que vai alterar a 
+variável de estado.
+ `const handleWindowWidth = () => setWidth(window.innerWidth);`
+Foi usado o window.innerWidth que vai retornar a lagura atual da viewPort. O método addEventListener
+recebe dois argumentos, o tipo do event, que no nosso caso vai ser resize, que é o tipo de evento a ser esperado, e a 
+function que vai manusear esse tipo de evento. E observe que o return do useEffect() vai ser o ciclo que vai ser responsável 
+por destruir o componete, e para essa ação vamos simplesmente remover o listener, usando `removeEventListener(handleWindowWidth)` para que
+
+> Não tenhamos que ficar executando essa function de forma desnecessária
+
+```
+useEffect(()=>{
+  window.addEventListener('resize', handleWindowWidth)
+  return () => {
+    window.removeEventListener('resize',handleWindowWidth);
+  }
+});
+```
+E observe que no final, apenas fazer um `return width`, ou seja estamos retornando a variável de estado que contém 
+a largura da viewPort. Assim lá no meu componente Pai, App, vamos pegar a largura da viewPort através do hook useWindowWidth()
+```
+function App() {
+  const width = useWindowWidth();               <--
+  return (
+      <h1>Window width is: {width} </h1>
+  );
+}
+```
+
